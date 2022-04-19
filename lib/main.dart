@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/':(context)=>MyHomePageScreen(),
-          SearchScreen.routeArgs:(context)=>SearchScreen(),
         },
       ),
     );

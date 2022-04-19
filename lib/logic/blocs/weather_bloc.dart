@@ -23,6 +23,7 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         print("No Internet");
         add(NoInternetEvent());
       } else {
+
         print("Yes Internet");
         add(LoadApiEvent(location: 'Tashkent'));
       }

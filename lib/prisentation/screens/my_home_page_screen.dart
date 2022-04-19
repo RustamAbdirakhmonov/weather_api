@@ -16,6 +16,7 @@ class MyHomePageScreen extends StatefulWidget {
 
 class _MyHomePageScreenState extends State<MyHomePageScreen> {
   bool isEmpty = false;
+  var texEditingController=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +31,63 @@ class _MyHomePageScreenState extends State<MyHomePageScreen> {
     return BlocProvider(
       create: (context) =>
       WeatherBloc(
-          connectivityService:
-          RepositoryProvider.of<ConnectivityService>(context),
-          weatherService: RepositoryProvider.of<WeatherService>(context,listen: false))..add(LoadApiEvent(location:"Tashkent")),
+          connectivityService: RepositoryProvider.of<ConnectivityService>(context),
+          weatherService: RepositoryProvider.of<WeatherService>(context))..add(LoadApiEvent(location:"Tashkent")),
       child: Scaffold(
         body: BlocBuilder<WeatherBloc, WeatherState>(
-
-
          builder: (context, state) {
            if(state is RouteNextPage){
-             return SearchScreen();
+             return Container(
+               decoration: BoxDecoration(
+                   gradient: LinearGradient(
+                       begin: FractionalOffset.topCenter,
+                       end: FractionalOffset.bottomCenter,
+                       tileMode: TileMode.repeated,
+                       colors: [
+                         Color(0xAA30A2C5),
+                         Color(0xAA00242F),
+                       ])),
+               padding: EdgeInsets.only(top: 50),
+               child: Column(
+                 children: <Widget>[
+                   Container(
+                     padding: EdgeInsets.all(15),
+                     width: width,
+                     height: height*.4,
+                     decoration: BoxDecoration(
+                       color: Colors.white,
+                       borderRadius: BorderRadius.circular(40),
+                     ),
+                     child: Column(
+                       children: <Widget>[
+                         Align(
+                           alignment: Alignment.topRight,
+                           child: IconButton(onPressed: (){
+                             BlocProvider.of<WeatherBloc>(context).add(LoadApiEvent(location: texEditingController.value.text!=""?texEditingController.value.text:"Tashkent"));
+                           },
+                             icon: Icon(Icons.clear,size: 28,),),
+                         ),
+                         Container(
+                             decoration: BoxDecoration(color: Colors.grey.shade300,borderRadius: BorderRadius.circular(30)),
+                             width: width*.7,
+                             child: TextField(
+                               style: TextStyle(
+                                 fontSize: 24,
+                                 decoration: TextDecoration.none,
+                               ),
+                               decoration: InputDecoration(
+                                 disabledBorder: InputBorder.none,
+                                 border: InputBorder.none,
+                                 contentPadding: EdgeInsets.only(left: 20),
+                               ),
+                               controller: texEditingController,
+                             ))
+                       ],
+                     ),
+                   )
+                 ],
+               ),
+             );
            }
           if (state is WeatherLoadingState) {
             return Container(
@@ -66,7 +114,6 @@ class _MyHomePageScreenState extends State<MyHomePageScreen> {
                             padding: EdgeInsets.only(right: 10, top: 25),
                             child: IconButton(
                               onPressed: () {
-                                Navigator.of(context).pushNamed(SearchScreen.routeArgs);
                               },
                               icon: Icon(
                                 Icons.search,
@@ -214,12 +261,7 @@ class _MyHomePageScreenState extends State<MyHomePageScreen> {
                           ),
                         ],
                       ),
-                      ElevatedButton(
-                          onPressed: () {
-                            BlocProvider.of<WeatherBloc>(context)
-                                .add(LoadApiEvent(location: "Tashkent"));
-                          },
-                          child: Text('Push The Button')),
+                      CircularProgressIndicator(color: Colors.white,strokeWidth: 1,),
                     ],
                   ),
                   Container(
@@ -258,15 +300,12 @@ class _MyHomePageScreenState extends State<MyHomePageScreen> {
                           Padding(
                             padding: EdgeInsets.only(right: 10, top: 25),
                             child: IconButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => BlocProvider.value(
-                                      value: BlocProvider.of<WeatherBloc>(context),
-                                      child: SearchScreen(),
-                                    ),
-                                  ),
-                                );
+                              onPressed: (){
+                                setState(() {
+                                  texEditingController.clear();
+                                });
+                                BlocProvider.of<WeatherBloc>(context)
+                                    .add(SearchEvent());
                               },
                               icon: Icon(
                                 Icons.search,
@@ -436,11 +475,14 @@ class _MyHomePageScreenState extends State<MyHomePageScreen> {
                         ],
                       ),
                       ElevatedButton(
+
                           onPressed: () {
                             BlocProvider.of<WeatherBloc>(context)
                                 .add(LoadApiEvent(location: "Tashkent"));
                           },
-                          child: Text('Push The Button')),
+                          child: Text('Current Temprature '),
+
+                      ),
                     ],
                   ),
                   Container(
